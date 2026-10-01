@@ -1,0 +1,12 @@
+CCCCN(C)C(=O)C1CCN(C(=O)[C@@H]2CCCN(S(=O)(=O)c3ccc(C)s3)C2)CC1: -7.59
+CCOc1ccc2c(c1)sc(=S)n2CN1C[C@H](C)O[C@@H](C)C1: -8.36
+CCc1noc(CC)c1CC(=O)NCc1ncc(C)c(OC)c1C: -7.35
+CCn1nc(C)c(C[NH+](C)Cc2cccc(OC(F)(F)F)c2)c1C: -7.71
+CNS(=O)(=O)c1ccc(C(=O)N2C[C@@H](C)OCC2(C)C)cc1: -7.63
+COc1cc(-c2cc(NCC[NH+](C)C)nc3[nH]ccc23)ccc1O: -8.85
+Cc1ccc(C)n1-c1ccc(Cl)c(N)c1: -7.12
+Cc1cccc(NC(=O)CN2C(=O)N[C@](C)(c3cccc(Br)c3)C2=O)c1: -6.17
+NC(=O)[C@]1([NH2+]C2CC2)CCC[C@@H](OCC2CC2)C1: -7.1
+O=C(Cc1csc(-c2cccc(F)c2)n1)N(Cc1ccccc1F)C1CC1: -8.08
+O=C(Nc1nc2c(s1)CCC[C@H]2C(=O)NCCc1ccccc1)c1ccc2c(c1)OCO2: 0.0
+c1coc([C@@H](C[NH2+]C[C@@H]2CNc3ccnn3C2)N2CCCC2)c1: -6.65
