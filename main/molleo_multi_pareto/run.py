@@ -79,7 +79,8 @@ class GB_GA_Optimizer(BaseOptimizer):
 
             gen_futures = {}   # future -> idx
             eval_futures = {}  # future -> (idx, smiles)
-            target = list(set([eva[0] for eva in self.oracle.min_evaluator]) & set(POSSIBLE_TARGETS))[0]
+            targets = list(set([eva[0] for eva in self.oracle.min_evaluator + self.oracle.max_evaluator]) & set(POSSIBLE_TARGETS))
+            target = targets[0] if targets else None
             offspring_smiles = []
             with ThreadPoolExecutor(max_workers=min(config["offspring_size"], 10)) as gen_pool, \
                 ThreadPoolExecutor(max_workers=min(config["offspring_size"], 10)) as eval_pool:
@@ -102,11 +103,12 @@ class GB_GA_Optimizer(BaseOptimizer):
 
                     if smiles is not None:
                         offspring_smiles.append(smiles)
-                        if self.args.oracle == "boltz":
-                            eval_f = eval_pool.submit(calculate_boltz_nautilus, target, smiles, self.oracle.affin_cache, idx)
-                        elif self.args.oracle == "docking":
-                            eval_f = eval_pool.submit(calculate_docking, target, smiles)
-                        eval_futures[eval_f] = (idx, smiles)
+                        if target is not None:
+                            if self.args.oracle == "boltz":
+                                eval_f = eval_pool.submit(calculate_boltz_nautilus, target, smiles, self.oracle.affin_cache, idx)
+                            elif self.args.oracle == "docking":
+                                eval_f = eval_pool.submit(calculate_docking, target, smiles)
+                            eval_futures[eval_f] = (idx, smiles)
 
                 # Collect evaluation results as they complete
                 for eval_future in as_completed(eval_futures):
@@ -126,15 +128,19 @@ class GB_GA_Optimizer(BaseOptimizer):
             population_smiles = self.sanitize(population_smiles)
             print("Population size: " + str(len(population_smiles)))
 
-            # Pareto optimal set
+            n_obj = len(self.oracle.max_evaluator) + len(self.oracle.min_evaluator)
             before = time.time()
-            population_smiles = list(self.oracle.select_pareto_front(population_smiles))
+            if n_obj > 1:
+                # Pareto optimal set
+                population_smiles = list(self.oracle.select_pareto_front(population_smiles))
+                population_smiles = [item for sublist in population_smiles for item in sublist]
             after = time.time()
             print(f"Boltz calculation took {str(after-before)} seconds")
-            population_smiles = [item for sublist in population_smiles for item in sublist]
             population_scores = self.oracle(population_smiles)
             population_tuples = list(zip(population_scores, population_smiles))
             population_tuples = sorted(population_tuples, key=lambda x: x[0], reverse=True)
+            if n_obj == 1:
+                population_tuples = population_tuples[:config["population_size"]]
             population_smiles = [t[1] for t in population_tuples]
             population_scores = [t[0] for t in population_tuples]
 

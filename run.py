@@ -14,11 +14,14 @@ def main():
     parser.add_argument('--max_oracle_calls', type=int, default=1000)
     parser.add_argument('--freq_log', type=int, default=10)
     parser.add_argument('--seed', type=int, nargs="+", default=[0])
-    parser.add_argument('--max_obj', nargs="+", default=["qed"])
-    parser.add_argument('--min_obj', nargs="+", default=["c-met", "sa"])
+    parser.add_argument('--max_obj', nargs="*", default=[])
+    parser.add_argument('--min_obj', nargs="*", default=[])
     parser.add_argument('--run_name', required=True)
     parser.add_argument('--oracle', type=str, default='boltz', choices=["boltz", "docking"])
     args = parser.parse_args()
+
+    if len(args.max_obj) + len(args.min_obj) == 0:
+        parser.error("specify at least one objective via --max_obj or --min_obj")
 
     print(args)
 

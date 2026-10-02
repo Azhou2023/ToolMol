@@ -53,6 +53,7 @@ def top_auc(buffer, top_n, finish, freq_log, max_oracle_calls):
     return sum / max_oracle_calls
 
 def tuple_to_score(input_tuple, oracle, *args):
+    qed = sa = affin = 0
     for idx, element in enumerate(input_tuple):
         if args[idx][0] in POSSIBLE_TARGETS:
             affin = -(element/13) if oracle == "boltz" else -(element/15)
@@ -275,7 +276,8 @@ class Oracle:
             mol = Chem.MolFromSmiles(smiles)
             qed = QED.qed(mol)
             sa = sascorer.calculateScore(mol)
-            new_buffer[smiles] = [self.affin_cache[main_target][smiles], self.mol_buffer[smiles][1], qed, sa]
+            affin = self.affin_cache[main_target].get(smiles, 0) if main_target else 0
+            new_buffer[smiles] = [affin, self.mol_buffer[smiles][1], qed, sa]
         with open(output_file_path, 'w') as f:
             yaml.dump(new_buffer, f, sort_keys=False)
 
@@ -305,6 +307,8 @@ class Oracle:
                 smis = [Chem.MolToSmiles(m, canonical=True) for m in mols]
                 n_calls = len(self.mol_buffer)
 
+        if len(scores) == 0:
+            return
         avg_top1 = np.max(scores)
         avg_top10 = np.mean(sorted(scores, reverse=True)[:10])
         avg_top100 = np.mean(scores)
@@ -453,7 +457,8 @@ class BaseOptimizer:
             mol = Chem.MolFromSmiles(smiles)
             qed = QED.qed(mol)
             sa = sascorer.calculateScore(mol)
-            new_buffer[smiles] = [self.oracle.affin_cache[main_target][smiles], self.oracle.mol_buffer[smiles][1], qed, sa]
+            affin = self.oracle.affin_cache[main_target].get(smiles, 0) if main_target else 0
+            new_buffer[smiles] = [affin, self.oracle.mol_buffer[smiles][1], qed, sa]
         with open(output_file_path, 'w') as f:
             yaml.dump(new_buffer, f, sort_keys=False)
 

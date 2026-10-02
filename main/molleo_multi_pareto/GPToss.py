@@ -1195,24 +1195,15 @@ class GPToss:
         parent_smiles = [t[1] for t in parent]
 
         try:
-            task_objective = "\nI want to "
+            phrases = []
             for min_obj in min_evaluators:
-                if min_obj[0] in POSSIBLE_TARGETS:
-                    task_objective += "improve "
-                else:
-                    task_objective += "minimize "
-                task_objective += obj_map[min_obj[0]]
-                task_objective += ", "
-            for max_obj in max_evaluators[:-1]:
-                if max_obj[0] in POSSIBLE_TARGETS:
-                    task_objective += "worsen "
-                else:
-                    task_objective += "maximize "
-                task_objective += obj_map[max_obj[0]]
-                task_objective += ", "
-            task_objective += "and maximize " if (max_evaluators[-1][0] not in POSSIBLE_TARGETS) else "and worsen "
-            task_objective += obj_map[max_evaluators[-1][0]]
-            task_objective += ". "
+                phrases.append(("improve " if min_obj[0] in POSSIBLE_TARGETS else "minimize ") + obj_map[min_obj[0]])
+            for max_obj in max_evaluators:
+                phrases.append(("worsen " if max_obj[0] in POSSIBLE_TARGETS else "maximize ") + obj_map[max_obj[0]])
+            if len(phrases) == 1:
+                task_objective = "\nI want to " + phrases[0] + ". "
+            else:
+                task_objective = "\nI want to " + ", ".join(phrases[:-1]) + ", and " + phrases[-1] + ". "
             task_objective += "Recall that a more negative binding affinity is better, and a more positive binding affinity is worse. Please propose a new molecule better than the current molecule."
 
             target_label = {"c-MET": "c-MET", "BRD4": "BRD4", "1COM": "1COM", "ACAA1": "ACAA1", "PKA": "PKA"}
