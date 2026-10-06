@@ -90,10 +90,10 @@ def main():
 
     print("RUN: " + os.path.basename(os.path.normpath(args.results_dir)))
     print("SEEDS: " + str(len(paths)))
-    print("AVG TOP TEN (CLUSTERED): " + str(np.mean(avg_top_10)))
-    print("STDEV TOP 10 (CLUSTERED): " + str(np.std(avg_top_10)))
-    print("MEAN FILTERED MOLECULES: " + str(np.mean(fmean)))
-    print("STD FILTERED MOLECULES: " + str(np.std(fmean)))
+    print("MEAN TOP AFFIN (CLUSTERED): " + str(np.mean(avg_top_10)))
+    print("STDEV TOP AFFIN (CLUSTERED): " + str(np.std(avg_top_10)))
+    print("MEAN FILTERED AFFIN: " + str(np.mean(fmean)))
+    print("STD FILTERED AFFIN: " + str(np.std(fmean)))
     print("HYPERVOLUME: " + str(np.mean(hv)))
     print("STD HYPERVOLUME: " + str(np.std(hv)))
 
